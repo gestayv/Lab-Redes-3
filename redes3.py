@@ -10,7 +10,7 @@ import time
 # imagen.
 def open_img(name):
     data = sm.imread(name, flatten=True)
-    return data
+    return data.tolist()
 
 # Función save_img: Se encarga de guardar un archivo de imagen en el equipo
 # Entrada:  - name: Nombre con el que se almacena la nueva imagen.
@@ -20,17 +20,20 @@ def save_img(name, data):
     sm.imsave(name, data, "bmp")
 
 # Función normalize_img: Se encarga de normalizar los datos de la matriz que representa la imagen que se procesa,
-# dejando todos sus valores entre 0 y 1.
+# dejando todos sus valores entre un rango de valores que se entrega a la función.
 # Entrada:  - data: Matriz que representa la imagen que se desea procesar.
+#           - a, b: Valores que corresponden al mínimo y al máximo de la escala empleada en la normalización.
 # Salida:   Matriz que representa la imagen, donde cada elemento de ella es un pixel y cuyo valor está en el rango
 # [0, 1].
-def normalize_img(data):
-    new_matrix = data
-    dim_r, dim_c = (len(data), len(data[0]))
-    for r in range(dim_r):
-        for c in range(dim_c):
-            new_matrix[r][c] = data[r][c]/255
-    return new_matrix
+def normalize_img(data, a, b):
+    A = max(max(data))
+    B = min(min(data))
+    rows, cols = (len(data), len(data[0]))
+    data2 = np.zeros((rows, cols)).tolist()
+    for i in range(rows):
+        for j in range(cols):
+            data2[i][j] = (data[i][j] - B) / (A - B)
+    return data2
 
 # Función apply_filter: Función que se encarga de aplicar el kernel en una región de la imagen original.
 # Entrada:  - r_k, c_k: Dimensiones de la matriz kernel.
@@ -118,7 +121,7 @@ def fourier_transform(data_1, data_2, data_3):
     plt.title("Transformada de la imagen original")
     freq_x = np.fft.fftfreq(spec_orig.shape[0], d=1 / (2 * spec_orig.max()))
     freq_y = np.fft.fftfreq(spec_orig.shape[1], d=1 / (2 * spec_orig.max()))
-    plt.imshow(spec_orig, cmap='hsv', extent=(freq_x.min(), freq_x.max(), freq_y.min(), freq_y.max()))
+    plt.imshow(spec_orig, cmap='YlOrRd', extent=(freq_x.min(), freq_x.max(), freq_y.min(), freq_y.max()))
     plt.ylabel("u (frecuencias verticales)")
     plt.xlabel("v (frecuencias horizontales)")
     plt.colorbar()
@@ -127,7 +130,7 @@ def fourier_transform(data_1, data_2, data_3):
     plt.title("Transformada del filtro Gaussiano")
     freq_x_g = np.fft.fftfreq(spec_gauss.shape[0], d=1 / (2 * spec_gauss.max()))
     freq_y_g = np.fft.fftfreq(spec_gauss.shape[1], d=1 / (2 * spec_gauss.max()))
-    plt.imshow(spec_gauss, cmap='hsv', extent=(freq_x_g.min(), freq_x_g.max(), freq_y_g.min(), freq_y_g.max()))
+    plt.imshow(spec_gauss, cmap='YlOrRd', extent=(freq_x_g.min(), freq_x_g.max(), freq_y_g.min(), freq_y_g.max()))
     plt.ylabel("u (frecuencias verticales)")
     plt.xlabel("v (frecuencias horizontales)")
     plt.colorbar()
@@ -136,7 +139,7 @@ def fourier_transform(data_1, data_2, data_3):
     plt.title("Transformada del filtro detector de bordes")
     freq_x_b = np.fft.fftfreq(spec_border.shape[0], d=1 / (2 * spec_border.max()))
     freq_y_b = np.fft.fftfreq(spec_border.shape[1], d=1 / (2 * spec_border.max()))
-    plt.imshow(spec_border, cmap='hsv', extent=(freq_x_b.min(), freq_x_b.max(), freq_y_b.min(), freq_y_b.max()))
+    plt.imshow(spec_border, cmap='YlOrRd', extent=(freq_x_b.min(), freq_x_b.max(), freq_y_b.min(), freq_y_b.max()))
     plt.ylabel("u (frecuencias verticales)")
     plt.xlabel("v (frecuencias horizontales)")
     plt.colorbar()
@@ -144,4 +147,20 @@ def fourier_transform(data_1, data_2, data_3):
     plt.tight_layout()
     plt.savefig('transform_plot.png', bbox_inches='tight', dpi=100)
 
-# TODO: Normalize results, so data can be compared.
+# Función plot_aside: Se encarga de graficar la transformada de Fourier en dos dimensiones de una imagen.
+# Entrada:  - data_1: Matriz de datos que representa la imagen de la que se obtiene la transformada.
+#           - name: Nombre con el que se guarda la transformada de la imagen.
+# Salida: La función genera una imagen con el gráfico de la transformada.
+def plot_aside(data_1, title, name):
+    fft_original = sft.fftshift(sft.fft2(data_1))
+    spec = np.log(np.abs(fft_original))
+
+    plt.figure(figsize=(10.24, 7.20), dpi=100)
+    plt.title(title)
+    plt.imshow(spec, cmap='YlOrRd')
+    plt.ylabel("u (frecuencias verticales)")
+    plt.xlabel("v (frecuencias horizontales)")
+    plt.colorbar()
+
+    plt.tight_layout()
+    plt.savefig(name, bbox_inches='tight', dpi=100)
