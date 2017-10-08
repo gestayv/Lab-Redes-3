@@ -2,7 +2,7 @@ import scipy.misc as sm
 import scipy.fftpack as sft
 import matplotlib.pyplot as plt
 import numpy as np
-import time
+import os
 
 # Función open_img: Se encarga de abrir un archivo de imagen.
 # Entrada:  - name: Nombre de la imagen, se incluye su extensión.
@@ -17,7 +17,9 @@ def open_img(name):
 #           - data: Matriz que representa la imagen a ser guardada, donde cada elemento es un pixel.
 # Salida:   La función no genera una salida.
 def save_img(name, data):
-    sm.imsave(name, data, "bmp")
+    dir_name = "./graphs/"
+    os.makedirs(dir_name, exist_ok=True)
+    sm.imsave(dir_name+name, data, "bmp")
 
 # Función normalize_img: Se encarga de normalizar los datos de la matriz que representa la imagen que se procesa,
 # dejando todos sus valores entre un rango de valores que se entrega a la función.
@@ -145,7 +147,9 @@ def fourier_transform(data_1, data_2, data_3):
     plt.colorbar()
 
     plt.tight_layout()
-    plt.savefig('transform_plot.png', bbox_inches='tight', dpi=100)
+    dir_name = "./graphs/"
+    os.makedirs(dir_name, exist_ok=True)
+    plt.savefig(dir_name+'transform_plot.png', bbox_inches='tight', dpi=100)
 
 # Función plot_aside: Se encarga de graficar la transformada de Fourier en dos dimensiones de una imagen.
 # Entrada:  - data_1: Matriz de datos que representa la imagen de la que se obtiene la transformada.
@@ -163,4 +167,6 @@ def plot_aside(data_1, title, name):
     plt.colorbar()
 
     plt.tight_layout()
-    plt.savefig(name, bbox_inches='tight', dpi=100)
+    dir_name = "./graphs/"
+    os.makedirs(dir_name, exist_ok=True)
+    plt.savefig(dir_name+name, bbox_inches='tight', dpi=100)

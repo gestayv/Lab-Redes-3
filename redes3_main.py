@@ -20,4 +20,4 @@ kernel = [[-1, -1, -1],
           [-1, 0, -1],
           [-1, -1, -1]]
 
-main_r3("us021.pgm", kernel)
+main_r3("leena512.bmp", kernel)
