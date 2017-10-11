@@ -161,7 +161,9 @@ def plot_aside(data_1, title, name):
 
     plt.figure(figsize=(10.24, 7.20), dpi=100)
     plt.title(title)
-    plt.imshow(spec, cmap='YlOrRd')
+    freq_x_b = np.fft.fftfreq(spec.shape[0], d=1 / (2 * spec.max()))
+    freq_y_b = np.fft.fftfreq(spec.shape[1], d=1 / (2 * spec.max()))
+    plt.imshow(spec, cmap='YlOrRd', extent=(freq_x_b.min(), freq_x_b.max(), freq_y_b.min(), freq_y_b.max()))
     plt.ylabel("u (frecuencias verticales)")
     plt.xlabel("v (frecuencias horizontales)")
     plt.colorbar()
